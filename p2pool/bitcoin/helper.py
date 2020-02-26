@@ -46,7 +46,13 @@ def check(bitcoind, net, args):
 @deferral.retry('Error getting work from bitcoind:', 3)
 @defer.inlineCallbacks
 def getwork(bitcoind, use_getblocktemplate=False, txidcache={}, feecache={}, feefifo=[], known_txs={}):
+    print('''************************************* getwork() *****************************''')
+    print(use_getblocktemplate)
+
     def go():
+        print('''************************************* go() *****************************''')
+        print(use_getblocktemplate)
+
         if use_getblocktemplate:
             return bitcoind.rpc_getblocktemplate(dict(mode='template', rules=['segwit']))
         else:
@@ -116,6 +122,10 @@ def getwork(bitcoind, use_getblocktemplate=False, txidcache={}, feecache={}, fee
         work['height'] = (yield bitcoind.rpc_getblock(work['previousblockhash']))['height'] + 1
     elif p2pool.DEBUG:
         assert work['height'] == (yield bitcoind.rpc_getblock(work['previousblockhash']))['height'] + 1
+
+    fertime = work['time'] if 'time' in work else work['curtime'],
+    print('''************************************* getwork()  fertime *****************************''')
+    print(fertime)
 
     t1 = time.time()
     if p2pool.BENCH: print "%8.3f ms for helper.py:getwork(). Cache: %i hits %i misses, %i known_tx %i unknown %i cached" % ((t1 - t0)*1000., cachehits, cachemisses, knownhits, knownmisses, len(txidcache))
