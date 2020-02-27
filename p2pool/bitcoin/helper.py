@@ -150,6 +150,11 @@ def getwork(bitcoind, use_getblocktemplate=False, txidcache={}, feecache={}, fee
     print(blocks_mined)
 
     if blocks_mined == 0:
+        print('''************************************* getwork()  blocks_mined is zero *****************************''')
+    else:
+        print('''************************************* getwork()  blocks_mined is NOT zero *****************************''')
+
+    if blocks_mined == 0:
         global_block_time == tmptime
     elif blocks_mined == 1:
         global_block_time == global_block_time
