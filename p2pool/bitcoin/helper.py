@@ -8,8 +8,9 @@ from p2pool.bitcoin import data as bitcoin_data
 from p2pool.util import deferral, jsonrpc
 txlookup = {}
 
-global_block_mined = 0
+# global_block_mined = 0
 global_block_time = None
+global_block_height = None
 
 @deferral.retry('Error while checking Bitcoin connection:', 1)
 @defer.inlineCallbacks
@@ -130,20 +131,29 @@ def getwork(bitcoind, use_getblocktemplate=False, txidcache={}, feecache={}, fee
     print('''************************************* getwork()  height *****************************''')
     print(work['height'])
 
-    global global_block_mined
+    # global global_block_mined
     global global_block_time
+    global global_block_height
+
+    if global_block_height is None:
+        global_block_height = work['height']
+
+    blocks_mined = work['height'] - global_block_height
+
+    print('''************************************* getwork()  global_block_height *****************************''')
+    print(global_block_height)
 
     tmptime = work['time'] if 'time' in work else work['curtime'],
     print('''************************************* getwork()  tmptime *****************************''')
     print(tmptime)
-    print('''************************************* getwork()  global_block_mined *****************************''')
-    print(global_block_mined)
+    print('''************************************* getwork()  blocks_mined *****************************''')
+    print(blocks_mined)
 
-    if global_block_mined == 0:
+    if blocks_mined == 0:
         global_block_time == tmptime
-    elif global_block_mined == 1:
+    elif blocks_mined == 1:
         global_block_time == global_block_time
-    elif global_block_mined == 2:
+    elif blocks_mined == 2:
         global_block_time == global_block_time - 1
 
     print('''************************************* getwork()  global_block_time *****************************''')
